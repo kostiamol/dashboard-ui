@@ -1,0 +1,11 @@
+/bower_components
+/node_modules
+npm-debug.log
+package-lock.json
+bundle.js
+bundle.js.map
+dist
+# IDE
+*.iml
+/.idea
+/.vscode
