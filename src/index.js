@@ -1,16 +1,18 @@
 import React from 'react';
-import { render } from 'react-dom';
-import AwesomeComponent from './components/AwesomeComponent.jsx';
+import ReactDOM from 'react-dom';
+import DeviceSet from './components/deviceSet.jsx';
 
 class App extends React.Component {
   render() {
     return (
-      <div>
-        <p> Hello, Kostia</p>
-        <AwesomeComponent />
+      <div>        
+        <DeviceSet />
       </div>
     );
   }
 }
 
-render(<App />, document.getElementById('app'));
+ReactDOM.render(
+  <App />, 
+  document.getElementById('main')
+);
