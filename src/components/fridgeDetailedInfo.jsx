@@ -1,6 +1,5 @@
 import React from 'react';
-import Navigation from './components/navigation.jsx';
-import * as helpers from 'helpers';
+import * as helpers from '../helpers/helpers';
 
 class FridgeDetailedInfo extends React.Component {
     constructor(props) {
@@ -194,61 +193,60 @@ class FridgeDetailedInfo extends React.Component {
     render() {
         return (
             <div>
-                <Navigation />
-                <div class="container">
+                <div className="container">
                     <h2>Detailed device info</h2>
-                    <form class="form-horizontal">
-                        <div class="row">
-                            <div class="col-md-6">
+                    <form className="form-horizontal">
+                        <div className="row">
+                            <div className="col-md-6">
                                 <h4>Basic device info</h4>
-                                <div class="form-group">
-                                    <label for="turnedOnBtn" class="col-sm-4 control-label">State</label>
-                                    <div class="col-sm-8">
-                                        <button type="button" class="btn btn-success" id="turnedOnBtn" onClick={this.onTurnedOn}></button>
+                                <div className="form-group">
+                                    <label for="turnedOnBtn" className="col-sm-4 control-label">State</label>
+                                    <div className="col-sm-8">
+                                        <button type="button" className="btn btn-success" id="turnedOnBtn" onClick={this.onTurnedOn}></button>
                                     </div>
                                 </div>
                                 <fieldset disabled>
-                                    <div class="form-group">
-                                        <label for="devType" class="col-sm-4 control-label">Type</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" id="devType" class="form-control" value="" />
+                                    <div className="form-group">
+                                        <label for="devType" className="col-sm-4 control-label">Type</label>
+                                        <div className="col-sm-8">
+                                            <input type="text" id="devType" className="form-control" value="" />
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="devName" class="col-sm-4 control-label">Name</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" id="devName" class="form-control" value="type" />
+                                    <div className="form-group">
+                                        <label for="devName" className="col-sm-4 control-label">Name</label>
+                                        <div className="col-sm-8">
+                                            <input type="text" id="devName" className="form-control" value="type" />
                                         </div>
                                     </div>
                                 </fieldset>
                             </div>
-                            <div class="col-md-6">
+                            <div className="col-md-6">
                                 <h4>Configuration</h4>
-                                <div class="form-group">
-                                    <label for="collectFreq" class="col-sm-4 control-label">Data collection interval (ms)</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" id="collectFreq" class="form-control" />
+                                <div className="form-group">
+                                    <label for="collectFreq" className="col-sm-4 control-label">Data collection interval (ms)</label>
+                                    <div className="col-sm-8">
+                                        <input type="text" id="collectFreq" className="form-control" />
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="sendFreq" class="col-sm-4 control-label">Data sending interval (ms)</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" id="sendFreq" class="form-control" />
+                                <div className="form-group">
+                                    <label for="sendFreq" className="col-sm-4 control-label">Data sending interval (ms)</label>
+                                    <div className="col-sm-8">
+                                        <input type="text" id="sendFreq" className="form-control" />
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="updateBtn" class="col-sm-4 control-label">Update</label>
-                                    <div class="col-sm-8">
-                                        <button type="button" class="btn btn-success" id="updateBtn" onClick={this.onUpdate}></button>
+                                <div className="form-group">
+                                    <label for="updateBtn" className="col-sm-4 control-label">Update</label>
+                                    <div className="col-sm-8">
+                                        <button type="button" className="btn btn-success" id="updateBtn" onClick={this.onUpdate}></button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <h4>Line chart</h4>
-                        <div class="form-group">
-                            <label for="streamOnBtn" class="col-sm-2 control-label">Data stream</label>
-                            <div class="col-sm-10">
-                                <button type="button" class="btn btn-success" id="streamOnBtn" onClick={this.onStreamOn}></button>
+                        <div className="form-group">
+                            <label for="streamOnBtn" className="col-sm-2 control-label">Data stream</label>
+                            <div className="col-sm-10">
+                                <button type="button" className="btn btn-success" id="streamOnBtn" onClick={this.onStreamOn}></button>
                             </div>
                         </div>
                     </form>

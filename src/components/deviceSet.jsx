@@ -1,22 +1,25 @@
 import React from 'react';
-import Navigation from './components/navigation.jsx';
-import FridgeCard from './components/fridgeCard.jsx';
+import axios from 'axios';
+import FridgeCard from './fridgeCard.jsx';
 
 class DeviceSet extends React.Component {
     state = {
-        devicesCount: 0,        
-        devices: {}
+        devicesCount: 0,
+        devices: []
     };
 
     componentDidMount() {
-        axios.get('/devices')
-            .then(function (response) {
-                parsedDevices = JSON.parse(response);
-                console.log("devices: ", parsedDevices);  
-                console.log("devices count: ", parsedDevices.length);                                
+        this.receiveParams();
+    }
+
+    receiveParams = () => {
+        axios.get('http://localhost:3301/devices')
+            .then(({ data }) => {
                 this.setState(
-                    {devices: parsedDevices},
-                    {devicesCount: parsedDevices.length}
+                    {
+                        devices: data,
+                        devicesCount: data.length
+                    }
                 );
             })
             .catch(function (error) {
@@ -24,28 +27,27 @@ class DeviceSet extends React.Component {
             });
     }
 
-    createDeviceCard = (device) => {
-        switch (device.type) {
+    newDeviceCard = (device) => {
+        switch (device.meta.type) {
             case 'fridge': {
                 return <FridgeCard
-                    type={device.type}
-                    name={device.name}
-                    mac={device.mac}
-                    topCompart={device.topCompart}
-                    botCompart={device.botCompart}
+                    type={device.meta.type}
+                    name={device.meta.name}
+                    mac={device.meta.mac}
+                    topCompart={device.data.TopCompart}
+                    botCompart={device.data.BotCompart}
                 />
             }
         }
     }
-    
+
     render() {
         return (
-            <div>               
-                <Navigation />
-                <div id="container" class="container">
-                    <div id="row" class="row">
-                        {this.state.devices.map((device) =>
-                            this.createDeviceCard(device)
+            <div>
+                <div id="container" className="container">
+                    <div id="row" className="row">
+                        {this.state.devices.map(device =>
+                            this.newDeviceCard(device)
                         )}
                     </div>
                 </div>

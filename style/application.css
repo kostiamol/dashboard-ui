@@ -57,7 +57,10 @@ BODY {
 	-webkit-transform: rotateY(180deg);
 }
 
-
+a.active {
+	color: #000000 !important;
+	text-decoration: underline !important;
+}
 
 #ex1Slider .slider-selection {
 	background: #BABABA;

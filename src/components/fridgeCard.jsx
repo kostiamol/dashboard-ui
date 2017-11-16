@@ -1,32 +1,34 @@
 import React from 'react';
 
 class FridgeCard extends React.Component {
-    constructor(props) {
-        super(props);
-        this.onShowDetailedData = this.onShowDetailedInfo.bind(this);
-    }
-
-    onShowDetailedInfo() {
-        window.location = "fridge.html?type=" + this.props.type + "&name="
-            + this.props.name + "&mac=" + this.props.mac;
+    onShowDetailedInfo = () => {
+        window.location = '/devices/' + this.props.mac;
     }
 
     render() {
+        let timeStampTopCompart = this.props.topCompart[this.props.topCompart.length - 1].split(":")[0]
+        let dateTopCompart = new Date(parseInt(timeStampTopCompart)).toLocaleString()
+        let tempTopCompart = this.props.topCompart[this.props.topCompart.length - 1].split(":")[1]
+        
+        let timeStampBotCompart = this.props.botCompart[this.props.botCompart.length - 1].split(":")[0]
+        let dateBotCompart = new Date(parseInt(timeStampBotCompart)).toLocaleString()
+        let tempBotCompart = this.props.botCompart[this.props.botCompart.length - 1].split(":")[1]
+        
         return (
-            <div class="info-card">
-                <div class="front">
-                    <img class="card-image" src="/style/imgs/fridge.ico" />
+            <div className="info-card">
+                <div className="front">
+                    <img className="card-image" src="/style/imgs/fridge.ico" />
                 </div>
-                <div class="back">
+                <div className="back">
                     <p>Type:{this.props.type}</p>
                     <p>Name:{this.props.name}</p>
                     <p>
-                        "Cam1Time: "{new Date(parseInt(this.props.topCompart[0])).toLocaleString()}<br></br>
-                        "Cam1Temp: "{this.props.topCompart[1]}<br></br><br></br>
-                        "Cam2Time: "{new Date(parseInt(this.props.botCompart[0])).toLocaleString()}<br></br>
-                        "Cam2Temp: "{this.props.botCompart[1]}
+                        "Cam1Time: "{dateTopCompart}<br></br>
+                        "Cam1Temp: "{tempTopCompart}<br></br><br></br>
+                        "Cam2Time: "{dateBotCompart}<br></br>
+                        "Cam2Temp: "{tempBotCompart}
                     </p>
-                    <button type="button" class="btn btn-basic" onClick={this.onShowDetailedInfo}>Detailed info</button>
+                    <button type="button" className="btn btn-basic" onClick={this.onShowDetailedInfo}>Detailed info</button>
                 </div>
             </div>
         );

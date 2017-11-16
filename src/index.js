@@ -1,18 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import DeviceSet from './components/deviceSet.jsx';
+import { render } from 'react-dom';
+import { BrowserRouter, Route } from 'react-router-dom'
+import App from './components/app.jsx';
 
-class App extends React.Component {
-  render() {
-    return (
-      <div>        
-        <DeviceSet />
-      </div>
-    );
-  }
-}
-
-ReactDOM.render(
-  <App />, 
-  document.getElementById('main')
-);
+render((
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+), document.getElementById('root'));
