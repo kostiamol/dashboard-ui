@@ -1,57 +1,25 @@
 import React from 'react';
-import * as helpers from '../helpers/helpers';
+import Websocket from 'react-websocket';
+import * as helpers from '../../../helpers/helpers';
 
 class FridgeDetailedInfo extends React.Component {
     constructor(props) {
         super(props);
 
-        var url = window.location.href.split("/");
-        var urlParams = parseURLParams(window.location.href);
-        var domain = url[2].split(":");
-
-        var fridgeDataList = [];
-        var webSocket = new WebSocket("ws://" + domain[0] + ":3546" + "/devices/" + String(urlParams["mac"]));
-        webSocket.onmessage = function (event) {
-            var incomingMessage = event.data;
-            var fridgeData = JSON.parse(incomingMessage);
-            fridgeDataList.push(fridgeData);
-        };
-
-        this.onTurnedOn = this.onTurnedOn.bind(this);
-        this.onUpdateOn = this.onUpdateOn.bind(this);
-        this.onStreamOn = this.onStreamOn.bind(this);
-        
         this.state = {
             showStreamData: false,
+            fridgeDataList: []
         }
-    }
 
-    componentDidMount() {
-        let urlParams = helpers.parseURLParams(window.location.href);
+        this.onUpdate = this.onUpdate.bind(this);         
+        this.onTurnedOn = this.onTurnedOn.bind(this);
+        this.onStreamOn = this.onStreamOn.bind(this);
+        this.handleData = this.handleData.bind(this);
+    }    
 
-        axios.get("/devices/id/data" + "?mac=" + urlParams["mac"] + "&type=" + urlParams["type"] + "&name=" + urlParams["name"])
-            .then(function (response) {
-                let fridge = JSON.parse(response);
-                setDevDataFields(obj);
-                printFridgeDataChart(fridge);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-
-        axios.get("/devices/" + urlParams["mac"] + "/config?mac=" + urlParams["mac"] + "&type=" + urlParams["type"] + "&name=" + urlParams["name"])
-            .then(function (response) {
-                let config = JSON.parse(response);
-                setDevConfigFields(config);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }
-
-    setDevDataFields = (fridge) =>{
-        document.getElementById('devType').value = fridge["meta"]["type"];
-        document.getElementById('devName').value = fridge["meta"]["name"];
+    setDevMeta = (meta) => {
+        document.getElementById('devType').value = meta.type;
+        document.getElementById('devName').value = meta.name;
     }
 
     printFridgeDataChart = (fridge) => {
@@ -163,7 +131,7 @@ class FridgeDetailedInfo extends React.Component {
 
     onUpdate() {
         helpers.sendDevConfigFreq(
-            urlParams["mac"],
+            this.props.mac,
             parseInt(document.getElementById('collectFreq').value),
             parseInt(document.getElementById('sendFreq').value)
         );
@@ -190,9 +158,15 @@ class FridgeDetailedInfo extends React.Component {
         }
     }
 
+    handleData(data) {
+        var fridgeData = JSON.parse(data);
+        fridgeDataList.push(fridgeData);
+    }
+
     render() {
         return (
             <div>
+                <Websocket url={'ws://localhost:3546/devices/' + this.props.mac} onMessage={this.handleData} />
                 <div className="container">
                     <h2>Detailed device info</h2>
                     <form className="form-horizontal">
@@ -200,22 +174,22 @@ class FridgeDetailedInfo extends React.Component {
                             <div className="col-md-6">
                                 <h4>Basic device info</h4>
                                 <div className="form-group">
-                                    <label for="turnedOnBtn" className="col-sm-4 control-label">State</label>
+                                    <label htmlFor="turnedOnBtn" className="col-sm-4 control-label">State</label>
                                     <div className="col-sm-8">
                                         <button type="button" className="btn btn-success" id="turnedOnBtn" onClick={this.onTurnedOn}></button>
                                     </div>
                                 </div>
                                 <fieldset disabled>
                                     <div className="form-group">
-                                        <label for="devType" className="col-sm-4 control-label">Type</label>
+                                        <label htmlFor="devType" className="col-sm-4 control-label">Type</label>
                                         <div className="col-sm-8">
-                                            <input type="text" id="devType" className="form-control" value="" />
+                                            <input type="text" id="devType" className="form-control" value="" readOnly/>
                                         </div>
                                     </div>
                                     <div className="form-group">
-                                        <label for="devName" className="col-sm-4 control-label">Name</label>
+                                        <label htmlFor="devName" className="col-sm-4 control-label">Name</label>
                                         <div className="col-sm-8">
-                                            <input type="text" id="devName" className="form-control" value="type" />
+                                            <input type="text" id="devName" className="form-control" value="type" readOnly/>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -223,19 +197,19 @@ class FridgeDetailedInfo extends React.Component {
                             <div className="col-md-6">
                                 <h4>Configuration</h4>
                                 <div className="form-group">
-                                    <label for="collectFreq" className="col-sm-4 control-label">Data collection interval (ms)</label>
+                                    <label htmlFor="collectFreq" className="col-sm-4 control-label">Data collection interval (ms)</label>
                                     <div className="col-sm-8">
                                         <input type="text" id="collectFreq" className="form-control" />
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label for="sendFreq" className="col-sm-4 control-label">Data sending interval (ms)</label>
+                                    <label htmlFor="sendFreq" className="col-sm-4 control-label">Data sending interval (ms)</label>
                                     <div className="col-sm-8">
                                         <input type="text" id="sendFreq" className="form-control" />
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label for="updateBtn" className="col-sm-4 control-label">Update</label>
+                                    <label htmlFor="updateBtn" className="col-sm-4 control-label">Update</label>
                                     <div className="col-sm-8">
                                         <button type="button" className="btn btn-success" id="updateBtn" onClick={this.onUpdate}></button>
                                     </div>
@@ -244,14 +218,14 @@ class FridgeDetailedInfo extends React.Component {
                         </div>
                         <h4>Line chart</h4>
                         <div className="form-group">
-                            <label for="streamOnBtn" className="col-sm-2 control-label">Data stream</label>
+                            <label htmlFor="streamOnBtn" className="col-sm-2 control-label">Data stream</label>
                             <div className="col-sm-10">
                                 <button type="button" className="btn btn-success" id="streamOnBtn" onClick={this.onStreamOn}></button>
                             </div>
                         </div>
                     </form>
                 </div>
-                <div id="container" style="height: 400px; min-width: 310px">
+                <div id="container" styles={{height: '400px', minWidth: '310px'}}>
                 </div>
             </div>
         );

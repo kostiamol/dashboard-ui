@@ -7,7 +7,7 @@ const publicPath = `http://localhost:${port}/`;
 module.exports = {
   entry: [
     'babel-polyfill',
-    path.join(__dirname, './src/index.js')
+    path.join(__dirname, './src/index.jsx')
   ],
 
   output: {

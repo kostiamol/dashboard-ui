@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import FridgeCard from './fridgeCard.jsx';
+import FridgeTile from './fridge/fridgeTile';
 
 class DeviceSet extends React.Component {
     state = {
@@ -27,10 +27,11 @@ class DeviceSet extends React.Component {
             });
     }
 
-    newDeviceCard = (device) => {
+    showDeviceTile = (device) => {
         switch (device.meta.type) {
             case 'fridge': {
-                return <FridgeCard
+                return <FridgeTile
+                    key={device.meta.mac}
                     type={device.meta.type}
                     name={device.meta.name}
                     mac={device.meta.mac}
@@ -47,7 +48,7 @@ class DeviceSet extends React.Component {
                 <div id="container" className="container">
                     <div id="row" className="row">
                         {this.state.devices.map(device =>
-                            this.newDeviceCard(device)
+                            this.showDeviceTile(device)
                         )}
                     </div>
                 </div>
