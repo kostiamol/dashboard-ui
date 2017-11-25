@@ -14,11 +14,10 @@ class DeviceDetailedInfo extends React.Component {
     }
 
     componentDidMount() {
-        let mac = this.props.match.params.mac
-
-        axios.get('http://localhost:3301/devices/' + mac + '/data')
-            .then(({ response }) => {
-                let device = JSON.parse(response);
+        let id = this.props.match.params.id
+        axios.get('http://localhost:3301/devices/' + id + '/data')
+            .then(({ data }) => {
+                console.dir(data)
                 this.state = {
                     meta: device.meta,
                     data: device.data,
@@ -29,9 +28,9 @@ class DeviceDetailedInfo extends React.Component {
                 console.log(error);
             });
 
-        axios.get('http://localhost:3301/devices/' + mac + '/config')
-            .then(({ response }) => {
-                let devConfig = JSON.parse(response);
+        axios.get('http://localhost:3301/devices/' + id + '/config')
+            .then(({ data }) => {
+                console.dir(data)
                 this.state = {
                     config: devConfig
                 }
