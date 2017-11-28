@@ -57,38 +57,3 @@ export function sendDevDataStreamOn(id, streamOn) {
 
     xhr.send(config);
 }
-
-export function setDevConfigFields(obj) {
-    if (obj["turnedOn"]) {
-        document.getElementById('turnedOnBtn').innerHTML = "On";
-        document.getElementById('turnedOnBtn').className = "btn btn-success";
-    } else {
-        document.getElementById('turnedOnBtn').innerHTML = "Off";
-        document.getElementById('turnedOnBtn').className = "btn btn-danger";
-    }
-
-    document.getElementById('collectFreq').value = obj["collectFreq"];
-    document.getElementById('sendFreq').value = obj["sendFreq"];
-
-    if (obj["streamOn"]) {
-        document.getElementById('streamOnBtn').innerHTML = "On";
-        document.getElementById('streamOnBtn').className = "btn btn-success";
-    } else {
-        document.getElementById('streamOnBtn').innerHTML = "Off";
-        document.getElementById('streamOnBtn').className = "btn btn-danger";
-    }
-}
-
-export function openDevDataWSConn() {
-    let url = window.location.href.split("/"),
-        urlParams = parseURLParams(window.location.href),
-        domain = url[2].split(":"),
-        devDataList = [],
-        webSocket = new WebSocket("ws://" + domain[0] + ":3546" + "/devices/" + String(urlParams["mac"]));
-
-    webSocket.onmessage = function (event) {
-        let message = event.data,
-            devData = JSON.parse(message);
-        devDataList.push(devData);
-    };
-}

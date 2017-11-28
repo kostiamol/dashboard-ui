@@ -10,19 +10,17 @@ class DeviceDetailedInfo extends React.Component {
             meta: {},
             data: {},
             config: {},
-        }
+        };
     }
 
     componentDidMount() {
         let id = this.props.match.params.id
         axios.get('http://localhost:3301/devices/' + id + '/data')
             .then(({ data }) => {
-                console.dir(data)
-                this.state = {
-                    meta: device.meta,
-                    data: device.data,
-                }
-                console.dir(device)
+                this.setState({
+                    meta: data.meta,
+                    data: data.data
+                });
             })
             .catch(function (error) {
                 console.log(error);
@@ -30,29 +28,32 @@ class DeviceDetailedInfo extends React.Component {
 
         axios.get('http://localhost:3301/devices/' + id + '/config')
             .then(({ data }) => {
-                console.dir(data)
-                this.state = {
-                    config: devConfig
-                }
-                console.dir(device)
+                this.setState({
+                    config: data
+                });
             })
             .catch(function (error) {
                 console.log(error);
             });
     }
 
-    showDetailedInfo() {
+    showDetailedInfo = () => {       
         switch (this.state.meta.type) {
             case 'fridge': {
-                return <FridgeDetailedInfo />
-            }
+                return <FridgeDetailedInfo
+                    config={this.state.config}
+                    meta={this.state.meta}
+                    data={this.state.data}
+                />
+                break;
+            }           
         }
     }
 
     render() {
         return (
             <div>
-                {this.showDetailedInfo(this.props.type)}
+                {this.showDetailedInfo()}
             </div>
         );
     }

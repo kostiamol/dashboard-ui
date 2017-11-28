@@ -9,23 +9,17 @@ class DeviceSet extends React.Component {
     };
 
     componentDidMount() {
-        this.receiveParams();
-    }
-
-    receiveParams = () => {
         axios.get('http://localhost:3301/devices')
-            .then(({ data }) => {
-                this.setState(
-                    {
-                        devices: data,
-                        devicesCount: data.length
-                    }
-                );
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }
+        .then(({ data }) => {
+            this.setState({
+                    devices: data,
+                    devicesCount: data.length
+                });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }   
 
     showDeviceTile = (device) => {
         switch (device.meta.type) {
@@ -37,8 +31,10 @@ class DeviceSet extends React.Component {
                     mac={device.meta.mac}
                     topCompart={device.data.TopCompart}
                     botCompart={device.data.BotCompart}
-                />
+                />;
             }
+            default:
+                console.error("unknown device type");
         }
     }
 

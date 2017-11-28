@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import Websocket from 'react-websocket';
 import * as helpers from '../../../helpers/helpers';
 
@@ -8,21 +9,36 @@ class FridgeDetailedInfo extends React.Component {
 
         this.state = {
             showStreamData: false,
-            fridgeDataList: []
-        }
-
-        this.onUpdate = this.onUpdate.bind(this);         
-        this.onTurnedOn = this.onTurnedOn.bind(this);
-        this.onStreamOn = this.onStreamOn.bind(this);
-        this.handleData = this.handleData.bind(this);
-    }    
-
-    setDevMeta = (meta) => {
-        document.getElementById('devType').value = meta.type;
-        document.getElementById('devName').value = meta.name;
+            dataSeries: []
+        };
     }
 
-    printFridgeDataChart = (fridge) => {
+    componentDidMount() {
+        document.getElementById('devType').value = this.props.meta.type;
+        document.getElementById('devName').value = this.props.meta.name;
+        if (this.props.config.turnedOn) {
+            document.getElementById('turnedOnBtn').innerHTML = "On";
+            document.getElementById('turnedOnBtn').className = "btn btn-success";
+        } else {
+            document.getElementById('turnedOnBtn').innerHTML = "Off";
+            document.getElementById('turnedOnBtn').className = "btn btn-danger";
+        }
+
+        document.getElementById('collectFreq').value = this.props.config.collectFreq;
+        document.getElementById('sendFreq').value = this.props.config.sendFreq;
+        if (this.props.config.streamOn) {
+            document.getElementById('streamOnBtn').innerHTML = "On";
+            document.getElementById('streamOnBtn').className = "btn btn-success";
+        } else {
+            document.getElementById('streamOnBtn').innerHTML = "Off";
+            document.getElementById('streamOnBtn').className = "btn btn-danger";
+        }
+
+        this.printFridgeDataSeriesChart(this.props.data);
+    }
+
+    printFridgeDataSeriesChart = (fridgeData) => {
+        const active = this.state.showStreamData;
         Highcharts.setOptions({
             global: {
                 useUTC: false
@@ -37,23 +53,23 @@ class FridgeDetailedInfo extends React.Component {
                         let seriesBotCompart = this.series[1];
                         let timerForRepaint = 50;
                         let repaint = function (fridge) {
-                            for (key in fridge.data.BotCompart) {
+                            for (key in fridgeData.BotCompart) {
                                 let time = parseInt(key);
-                                let temp = parseFloat(fridge.data.BotCompart[key]);
+                                let temp = parseFloat(fridgeData.BotCompart[key]);
                                 seriesBotCompart.addPoint([time, temp], true, true);
                             }
-                            for (key in fridge.data.TopCompart) {
+                            for (key in fridgeData.TopCompart) {
                                 let time = parseInt(key);
-                                let temp = parseFloat(fridge.data.TopCompart[key]);
+                                let temp = parseFloat(fridgeData.TopCompart[key]);
                                 seriesTopCompart.addPoint([time, temp], true, true);
                             }
                         };
 
-                        let timerId = setInterval(function () {
-                            if (showStreamData === true) {
-                                let fridgeData = fridgeDataList.shift()
-                                if (fridgeData !== undefined) {
-                                    repaint(fridgeData)
+                        let timerId = setInterval(() => {
+                            if (active) {
+                                let datum = this.state.dataSeries.shift()
+                                if (datum !== undefined) {
+                                    repaint(datum)
                                 }
                             }
                         }, timerForRepaint)
@@ -86,10 +102,10 @@ class FridgeDetailedInfo extends React.Component {
                 name: 'TopCompart',
                 data: (function () {
                     let data = [];
-                    for (let i = 0; i < fridge["data"]["TopCompart"].length; ++i) {
+                    for (let i = 0; i < fridgeData.TopCompart.length; ++i) {
                         data.push({
-                            x: parseInt(fridge["data"]["TopCompart"][i].split(':')[0]),
-                            y: parseFloat(fridge["data"]["TopCompart"][i].split(':')[1])
+                            x: parseInt(fridgeData.TopCompart[i].split(':')[0]),
+                            y: parseFloat(fridgeData.TopCompart[i].split(':')[1])
                         });
                     }
                     return data;
@@ -98,10 +114,10 @@ class FridgeDetailedInfo extends React.Component {
                 name: 'BotCompart',
                 data: (function () {
                     let data = [];
-                    for (let i = 0; i < fridge["data"]["BotCompart"].length; ++i) {
+                    for (let i = 0; i < fridgeData.BotCompart.length; ++i) {
                         data.push({
-                            x: parseInt(fridge["data"]["BotCompart"][i].split(':')[0]),
-                            y: parseFloat(fridge["data"]["BotCompart"][i].split(':')[1])
+                            x: parseInt(fridgeData.BotCompart[i].split(':')[0]),
+                            y: parseFloat(fridgeData.BotCompart[i].split(':')[1])
                         });
                     }
                     return data;
@@ -110,18 +126,18 @@ class FridgeDetailedInfo extends React.Component {
         })
     }
 
-    onTurnedOn() {
+    onTurnedOn = () => {
         let value = this.innerHTML;
         if (value === "On") {
             sendDevConfigTurnedOn(
-                urlParams["mac"],
+                this.props.meta.mac,
                 false
             );
             this.innerHTML = "Off";
             this.className = "btn btn-danger";
         } else {
             sendDevConfigTurnedOn(
-                urlParams["mac"],
+                this.props.meta.mac,
                 true
             );
             this.innerHTML = "On";
@@ -129,22 +145,29 @@ class FridgeDetailedInfo extends React.Component {
         }
     }
 
-    onUpdate() {
-        helpers.sendDevConfigFreq(
-            this.props.mac,
-            parseInt(document.getElementById('collectFreq').value),
-            parseInt(document.getElementById('sendFreq').value)
-        );
+    onUpdate = () => {       
+        axios.patch('/devices/' + this.props.match.params.id + '/config', {
+            collectFreq: parseInt(document.getElementById('collectFreq').value),
+            sendFreq: parseInt(document.getElementById('sendFreq').value),
+          })
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
     }
 
-    onStreamOn() {
+    onStreamOn = () => {
         let value = this.innerHTML;
         if (value === "On") {
             /*helpers.sendDevDataStreamOn(
                 urlParams["mac"],
                 false
             );*/
-            showStreamData = false;
+            this.setState({
+                showStreamData: false
+            });
             this.innerHTML = "Off";
             this.className = "btn btn-danger";
         } else {
@@ -152,21 +175,25 @@ class FridgeDetailedInfo extends React.Component {
                 urlParams["mac"],
                 true
             );*/
-            showStreamData = true;
+            this.setState({
+                showStreamData: true
+            });
             this.innerHTML = "On";
             this.className = "btn btn-success";
         }
     }
 
-    handleData(data) {
-        var fridgeData = JSON.parse(data);
-        fridgeDataList.push(fridgeData);
+    handleWSMessages = (msg) => {
+        console.dir(msg.data);
+        this.setState({
+            dataSeries: dataSeries.push(msg.data)
+        });
     }
 
     render() {
         return (
             <div>
-                <Websocket url={'ws://localhost:3546/devices/' + this.props.mac} onMessage={this.handleData} />
+                <Websocket url={'ws://localhost:3546/devices/' + this.props.meta.mac} onMessage={this.handleWSMessages} />
                 <div className="container">
                     <h2>Detailed device info</h2>
                     <form className="form-horizontal">
@@ -183,13 +210,13 @@ class FridgeDetailedInfo extends React.Component {
                                     <div className="form-group">
                                         <label htmlFor="devType" className="col-sm-4 control-label">Type</label>
                                         <div className="col-sm-8">
-                                            <input type="text" id="devType" className="form-control" value="" readOnly/>
+                                            <input type="text" id="devType" className="form-control" readOnly />
                                         </div>
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="devName" className="col-sm-4 control-label">Name</label>
                                         <div className="col-sm-8">
-                                            <input type="text" id="devName" className="form-control" value="type" readOnly/>
+                                            <input type="text" id="devName" className="form-control" readOnly />
                                         </div>
                                     </div>
                                 </fieldset>
@@ -209,9 +236,9 @@ class FridgeDetailedInfo extends React.Component {
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="updateBtn" className="col-sm-4 control-label">Update</label>
+                                    <label htmlFor="updateBtn" className="col-sm-4 control-label"></label>
                                     <div className="col-sm-8">
-                                        <button type="button" className="btn btn-success" id="updateBtn" onClick={this.onUpdate}></button>
+                                        <button type="button" className="btn btn-success" id="updateBtn" onClick={this.onUpdate}>Update</button>
                                     </div>
                                 </div>
                             </div>
@@ -225,7 +252,7 @@ class FridgeDetailedInfo extends React.Component {
                         </div>
                     </form>
                 </div>
-                <div id="container" styles={{height: '400px', minWidth: '310px'}}>
+                <div id="container" styles={{ height: '400px', minWidth: '310px' }}>
                 </div>
             </div>
         );
