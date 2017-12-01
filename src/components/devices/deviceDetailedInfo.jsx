@@ -37,16 +37,17 @@ class DeviceDetailedInfo extends React.Component {
             });
     }
 
-    showDetailedInfo = () => {       
+    showDetailedInfo = () => {
         switch (this.state.meta.type) {
             case 'fridge': {
                 return <FridgeDetailedInfo
+                    id={this.props.match.params.id}
                     config={this.state.config}
                     meta={this.state.meta}
                     data={this.state.data}
                 />
                 break;
-            }           
+            }
         }
     }
 

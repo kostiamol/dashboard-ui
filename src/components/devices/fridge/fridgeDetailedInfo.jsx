@@ -8,37 +8,20 @@ class FridgeDetailedInfo extends React.Component {
         super(props);
 
         this.state = {
-            showStreamData: false,
-            dataSeries: []
+            dataSeries: [],
+            collectFreq: this.props.config.collectFreq,
+            sendFreq: this.props.config.sendFreq,
+            turnedOn: this.props.config.turenedOn,
+            streamOn: false,
         };
     }
 
     componentDidMount() {
-        document.getElementById('devType').value = this.props.meta.type;
-        document.getElementById('devName').value = this.props.meta.name;
-        if (this.props.config.turnedOn) {
-            document.getElementById('turnedOnBtn').innerHTML = "On";
-            document.getElementById('turnedOnBtn').className = "btn btn-success";
-        } else {
-            document.getElementById('turnedOnBtn').innerHTML = "Off";
-            document.getElementById('turnedOnBtn').className = "btn btn-danger";
-        }
-
-        document.getElementById('collectFreq').value = this.props.config.collectFreq;
-        document.getElementById('sendFreq').value = this.props.config.sendFreq;
-        if (this.props.config.streamOn) {
-            document.getElementById('streamOnBtn').innerHTML = "On";
-            document.getElementById('streamOnBtn').className = "btn btn-success";
-        } else {
-            document.getElementById('streamOnBtn').innerHTML = "Off";
-            document.getElementById('streamOnBtn').className = "btn btn-danger";
-        }
-
         this.printFridgeDataSeriesChart(this.props.data);
     }
 
     printFridgeDataSeriesChart = (fridgeData) => {
-        const active = this.state.showStreamData;
+        const active = this.state.streamOn;
         Highcharts.setOptions({
             global: {
                 useUTC: false
@@ -126,61 +109,43 @@ class FridgeDetailedInfo extends React.Component {
         })
     }
 
-    onTurnedOn = () => {
-        let value = this.innerHTML;
-        if (value === "On") {
-            sendDevConfigTurnedOn(
-                this.props.meta.mac,
-                false
-            );
-            this.innerHTML = "Off";
-            this.className = "btn btn-danger";
-        } else {
-            sendDevConfigTurnedOn(
-                this.props.meta.mac,
-                true
-            );
-            this.innerHTML = "On";
-            this.className = "btn btn-success";
-        }
+    handleTurnedOn = () => {
+        this.setState({turnedOn: !this.state.turnedOn});        
+
+        axios.patch('http://localhost:3301/devices/' + this.props.id + '/config', {
+            turenedOn: this.state.turnedOn
+        })
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }   
+
+    handleUpdate = () => {
+        axios.patch('http://localhost:3301/devices/' + this.props.id + '/config', {
+            collectFreq: this.state.collectFreq,
+            sendFreq: this.state.sendFreq,
+        })
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
-    onUpdate = () => {       
-        axios.patch('/devices/' + this.props.match.params.id + '/config', {
-            collectFreq: parseInt(document.getElementById('collectFreq').value),
-            sendFreq: parseInt(document.getElementById('sendFreq').value),
-          })
-          .then(function (response) {
-            console.log(response);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+    handleStreamOn = () => {
+        this.setState({streamOn: !this.state.streamOn});
     }
 
-    onStreamOn = () => {
-        let value = this.innerHTML;
-        if (value === "On") {
-            /*helpers.sendDevDataStreamOn(
-                urlParams["mac"],
-                false
-            );*/
-            this.setState({
-                showStreamData: false
-            });
-            this.innerHTML = "Off";
-            this.className = "btn btn-danger";
-        } else {
-            /*helpers.sendDevDataStreamOn(
-                urlParams["mac"],
-                true
-            );*/
-            this.setState({
-                showStreamData: true
-            });
-            this.innerHTML = "On";
-            this.className = "btn btn-success";
-        }
+    handleCollectFreq = (event) => {
+        this.setState({collectFreq: event.target.value});
+    }
+
+    handleSendFreq = (event) => {
+        this.setState({sendFreq: event.target.value});
     }
 
     handleWSMessages = (msg) => {
@@ -193,7 +158,7 @@ class FridgeDetailedInfo extends React.Component {
     render() {
         return (
             <div>
-                <Websocket url={'ws://localhost:3546/devices/' + this.props.meta.mac} onMessage={this.handleWSMessages} />
+                <Websocket url={'ws://localhost:3546/devices/' + this.props.id} onMessage={this.handleWSMessages} />
                 <div className="container">
                     <h2>Detailed device info</h2>
                     <form className="form-horizontal">
@@ -203,20 +168,20 @@ class FridgeDetailedInfo extends React.Component {
                                 <div className="form-group">
                                     <label htmlFor="turnedOnBtn" className="col-sm-4 control-label">State</label>
                                     <div className="col-sm-8">
-                                        <button type="button" className="btn btn-success" id="turnedOnBtn" onClick={this.onTurnedOn}></button>
+                                        <button type="button" id="turnedOnBtn" onClick={this.handleTurnedOn} className={this.state.turnedOn ? "btn btn-success" : "btn btn-danger"}>{this.state.turnedOn ? "On" : "Off"}</button>
                                     </div>
                                 </div>
                                 <fieldset disabled>
                                     <div className="form-group">
                                         <label htmlFor="devType" className="col-sm-4 control-label">Type</label>
                                         <div className="col-sm-8">
-                                            <input type="text" id="devType" className="form-control" readOnly />
+                                            <input type="text" id="devType" className="form-control" readOnly value={this.props.meta.type} />
                                         </div>
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="devName" className="col-sm-4 control-label">Name</label>
                                         <div className="col-sm-8">
-                                            <input type="text" id="devName" className="form-control" readOnly />
+                                            <input type="text" id="devName" className="form-control" readOnly value={this.props.meta.name} />
                                         </div>
                                     </div>
                                 </fieldset>
@@ -226,19 +191,19 @@ class FridgeDetailedInfo extends React.Component {
                                 <div className="form-group">
                                     <label htmlFor="collectFreq" className="col-sm-4 control-label">Data collection interval (ms)</label>
                                     <div className="col-sm-8">
-                                        <input type="text" id="collectFreq" className="form-control" />
+                                        <input type="text" id="collectFreq" className="form-control" onChange={this.handleCollectFreq} value={this.state.collectFreq} />
                                     </div>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="sendFreq" className="col-sm-4 control-label">Data sending interval (ms)</label>
                                     <div className="col-sm-8">
-                                        <input type="text" id="sendFreq" className="form-control" />
+                                        <input type="text" id="sendFreq" className="form-control" onChange={this.handleSendFreq} value={this.state.sendFreq} />
                                     </div>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="updateBtn" className="col-sm-4 control-label"></label>
                                     <div className="col-sm-8">
-                                        <button type="button" className="btn btn-success" id="updateBtn" onClick={this.onUpdate}>Update</button>
+                                        <button type="button" className="btn btn-success" id="updateBtn" onClick={this.handleUpdate}>Update</button>
                                     </div>
                                 </div>
                             </div>
@@ -247,7 +212,7 @@ class FridgeDetailedInfo extends React.Component {
                         <div className="form-group">
                             <label htmlFor="streamOnBtn" className="col-sm-2 control-label">Data stream</label>
                             <div className="col-sm-10">
-                                <button type="button" className="btn btn-success" id="streamOnBtn" onClick={this.onStreamOn}></button>
+                                <button type="button" id="streamOnBtn" onClick={this.handleStreamOn} className={this.state.streamOn ? "btn btn-success" : "btn btn-danger"}>{this.state.streamOn ? "On" : "Off"}</button>
                             </div>
                         </div>
                     </form>
