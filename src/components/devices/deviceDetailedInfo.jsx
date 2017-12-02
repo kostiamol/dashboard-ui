@@ -35,6 +35,9 @@ class DeviceDetailedInfo extends React.Component {
             .catch(function (error) {
                 console.log(error);
             });
+            console.dir(this.state.config)
+            console.dir(this.state.meta)   
+            console.dir(this.state.data)                        
     }
 
     showDetailedInfo = () => {

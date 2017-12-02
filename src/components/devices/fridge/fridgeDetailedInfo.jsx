@@ -11,7 +11,7 @@ class FridgeDetailedInfo extends React.Component {
             dataSeries: [],
             collectFreq: this.props.config.collectFreq,
             sendFreq: this.props.config.sendFreq,
-            turnedOn: this.props.config.turenedOn,
+            turnedOn: this.props.config.turnedOn,
             streamOn: false,
         };
     }
@@ -110,10 +110,15 @@ class FridgeDetailedInfo extends React.Component {
     }
 
     handleTurnedOn = () => {
-        this.setState({turnedOn: !this.state.turnedOn});        
-
+        console.log(this.state.turnedOn)
+        this.setState({ turnedOn: !this.state.turnedOn });
+        console.log(this.state.turnedOn)
+        
         axios.patch('http://localhost:3301/devices/' + this.props.id + '/config', {
-            turenedOn: this.state.turnedOn
+            mac: this.props.meta.mac,
+            "data": {
+                turnedOn: this.state.turnedOn
+            }
         })
             .then(function (response) {
                 console.log(response);
@@ -121,12 +126,15 @@ class FridgeDetailedInfo extends React.Component {
             .catch(function (error) {
                 console.log(error);
             });
-    }   
+    }
 
     handleUpdate = () => {
         axios.patch('http://localhost:3301/devices/' + this.props.id + '/config', {
-            collectFreq: this.state.collectFreq,
-            sendFreq: this.state.sendFreq,
+            mac: this.props.meta.mac,
+            "data": {
+                collectFreq: this.state.collectFreq,
+                sendFreq: this.state.sendFreq,
+            }
         })
             .then(function (response) {
                 console.log(response);
@@ -137,15 +145,15 @@ class FridgeDetailedInfo extends React.Component {
     }
 
     handleStreamOn = () => {
-        this.setState({streamOn: !this.state.streamOn});
+        this.setState({ streamOn: !this.state.streamOn });
     }
 
     handleCollectFreq = (event) => {
-        this.setState({collectFreq: event.target.value});
+        this.setState({ collectFreq: event.target.value });
     }
 
     handleSendFreq = (event) => {
-        this.setState({sendFreq: event.target.value});
+        this.setState({ sendFreq: event.target.value });
     }
 
     handleWSMessages = (msg) => {
