@@ -1,24 +1,27 @@
 import React from 'react';
 import axios from 'axios';
 import Websocket from 'react-websocket';
-import * as helpers from '../../../helpers/helpers';
 
 class FridgeDetailedInfo extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            dataSeries: [],
-            collectFreq: this.props.config.collectFreq,
-            sendFreq: this.props.config.sendFreq,
-            turnedOn: this.props.config.turnedOn,
-            streamOn: false,
-        };
+    state = {
+        dataSeries: [],
+        collectFreq: 0,
+        sendFreq: 0,
+        turnedOn: false,
+        streamOn: false,
     }
 
     componentDidMount() {
         this.printFridgeDataSeriesChart(this.props.data);
     }
+
+    componentWillReceiveProps(newProps) {
+        this.setState({
+            collectFreq: newProps.config.collectFreq,
+            sendFreq: newProps.config.sendFreq,
+            turnedOn: newProps.config.turnedOn,
+        })
+    };
 
     printFridgeDataSeriesChart = (fridgeData) => {
         const active = this.state.streamOn;
@@ -110,22 +113,20 @@ class FridgeDetailedInfo extends React.Component {
     }
 
     handleTurnedOn = () => {
-        console.log(this.state.turnedOn)
-        this.setState({ turnedOn: !this.state.turnedOn });
-        console.log(this.state.turnedOn)
-        
-        axios.patch('http://localhost:3301/devices/' + this.props.id + '/config', {
-            mac: this.props.meta.mac,
-            "data": {
-                turnedOn: this.state.turnedOn
-            }
-        })
-            .then(function (response) {
-                console.log(response);
+        this.setState({ turnedOn: !this.state.turnedOn }, () => {
+            axios.patch('http://localhost:3301/devices/' + this.props.id + '/config', {
+                mac: this.props.meta.mac,
+                "data": {
+                    turnedOn: this.state.turnedOn
+                }
             })
-            .catch(function (error) {
-                console.log(error);
-            });
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        });
     }
 
     handleUpdate = () => {
@@ -164,6 +165,7 @@ class FridgeDetailedInfo extends React.Component {
     }
 
     render() {
+        console.log(this.state)
         return (
             <div>
                 <Websocket url={'ws://localhost:3546/devices/' + this.props.id} onMessage={this.handleWSMessages} />
