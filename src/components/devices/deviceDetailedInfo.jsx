@@ -3,15 +3,11 @@ import axios from 'axios';
 import FridgeDetailedInfo from './fridge/fridgeDetailedInfo';
 
 class DeviceDetailedInfo extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            meta: {},
-            data: {},
-            config: {},
-        };
-    }
+    state = {
+        meta: {},
+        data: {},
+        config: {},
+    };
 
     componentDidMount() {
         let id = this.props.match.params.id
@@ -35,9 +31,9 @@ class DeviceDetailedInfo extends React.Component {
             .catch(function (error) {
                 console.log(error);
             });
-            console.dir(this.state.config)
-            console.dir(this.state.meta)   
-            console.dir(this.state.data)                        
+        console.dir(this.state.config)
+        console.dir(this.state.meta)
+        console.dir(this.state.data)
     }
 
     showDetailedInfo = () => {
