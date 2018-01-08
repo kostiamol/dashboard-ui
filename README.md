@@ -29,5 +29,5 @@ npm run server
 npm run dev
 ```
 
-5. If you chose centerms as the server, then for proper functioning of the system as a whole install and run the some of the "devices":
+5. If you chose centerms as the server, then for proper functioning of the system as a whole install and run some of the "devices":
 - [fridgems](https://github.com/kostiamol/fridgems)
