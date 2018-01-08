@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/kostiamol/dashboard-ui.svg?branch=dev)](https://travis-ci.org/giperboloid/dashboard-ui)
+[![Build Status](https://travis-ci.org/kostiamol/dashboard-ui.svg?branch=dev)](https://travis-ci.org/kostiamol/dashboard-ui)
 ## How to deploy
 #### 1) install dependencies:
 `npm install`
