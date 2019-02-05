@@ -5,7 +5,10 @@ class Header extends React.Component {
     render() {
         return (
             <div>
-                <nav className="navbar navbar-default">
+                <h1 id="mainHeader">
+                    Smart <span className="blue">Home</span>
+                </h1>
+                {/* <nav className="navbar navbar-default">
                     <div className="container-fluid">
                         <div className="navbar-header">
                             <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"
@@ -22,7 +25,7 @@ class Header extends React.Component {
                             </ul>
                         </div>
                     </div>
-                </nav>
+                </nav> */}
                 <div className="container">
                     {this.props.children}
                 </div>
