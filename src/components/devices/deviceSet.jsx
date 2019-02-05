@@ -19,6 +19,8 @@ class DeviceSet extends React.Component {
         .catch(function (error) {
             console.log(error);
         });
+        global.reactHistory = this.props.history;
+        console.log(this);
     }   
 
     showDeviceTile = (device) => {
@@ -41,7 +43,7 @@ class DeviceSet extends React.Component {
     render() {
         return (
             <div>
-                <div id="container" className="container">
+                <div id="containerTile">
                     <div id="row" className="row">
                         {this.state.devices.map(device =>
                             this.showDeviceTile(device)

@@ -165,9 +165,8 @@ class FridgeDetailedInfo extends React.Component {
     }
 
     render() {
-        console.log(this.state)
         return (
-            <div>
+            <div id="details">
                 <Websocket url={'ws://localhost:3546/devices/' + this.props.id} onMessage={this.handleWSMessages} />
                 <div className="container">
                     <h2>Detailed device info</h2>
@@ -227,7 +226,7 @@ class FridgeDetailedInfo extends React.Component {
                         </div>
                     </form>
                 </div>
-                <div id="container" styles={{ height: '400px', minWidth: '310px' }}>
+                <div id="container" styles="height: '400px', minWidth: '310px'">
                 </div>
             </div>
         );

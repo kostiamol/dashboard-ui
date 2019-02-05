@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import FridgeDetailedInfo from './fridge/fridgeDetailedInfo';
+import DeviceSet from './DeviceSet';
 
 class DeviceDetailedInfo extends React.Component {
     state = {
@@ -34,6 +35,7 @@ class DeviceDetailedInfo extends React.Component {
         console.dir(this.state.config)
         console.dir(this.state.meta)
         console.dir(this.state.data)
+        global.reactHistory = this.props.history;
     }
 
     showDetailedInfo = () => {
@@ -53,6 +55,7 @@ class DeviceDetailedInfo extends React.Component {
     render() {
         return (
             <div>
+                <DeviceSet></DeviceSet>
                 {this.showDetailedInfo()}
             </div>
         );
